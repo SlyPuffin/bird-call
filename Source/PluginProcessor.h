@@ -10,6 +10,13 @@
 
 #include <JuceHeader.h>
 
+struct ChainSettings
+{
+    float peakFreq { 0 }, peakGainInDecibels { 0 }, peakQuality { 1.f };
+};
+
+ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& spvts);
+
 //==============================================================================
 /**
 */
@@ -56,7 +63,19 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    juce::AudioProcessorValueTreeState apvts {*this, nullptr, "Parameters", createParameterLayout()};
+
 private:
+    using Filter = juce::dsp::IIR::Filter<float>;
+    using MonoChain = juce::dsp::ProcessorChain<Filter>;
+
+    MonoChain leftChain, rightChain;
+
+    enum ChainPositions
+    {
+        Peak
+    };
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BirdcallAudioProcessor)
 };
