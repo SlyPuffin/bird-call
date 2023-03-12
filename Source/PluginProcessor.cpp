@@ -105,7 +105,42 @@ void BirdcallAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
     rightChain.prepare(spec);
 
     auto chainSettings = getChainSettings(apvts);
-    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, chainSettings.peakFreq, chainSettings.peakQuality, juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels));
+    auto peakQuality = 10.f;
+    auto peakGain = juce::Decibels::decibelsToGain(24.f);
+    auto peakFrequency = 20.f;
+
+    switch( chainSettings.note )
+    {
+        case Bypass:
+            peakGain = juce::Decibels::decibelsToGain(0.f);
+            break;
+        case C4:
+            peakFrequency = 261.63;
+        case Db4;
+            peakFrequency = 277.18;
+        case D4:
+            peakFrequency = 293.66;
+        case Eb4:
+            peakFrequency = 311.13;
+        case E4:
+            peakFrequency = 329.63;
+        case F4:
+            peakFrequency = 349.23;
+        case Gb4:
+            peakFrequency = 369.99;
+        case G4:
+            peakFrequency = 392.00;
+        case Ab4:
+            peakFrequency = 415.30;
+        case A4:
+            peakFrequency = 440.00;
+        case Bb4:
+            peakFrequency = 466.16;
+        case B4:
+            peakFrequency = 493.88;
+        }
+    
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, peakFrequency, peakQuality, peakGain);
 
     *leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
     *rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
@@ -159,8 +194,43 @@ void BirdcallAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
         buffer.clear (i, 0, buffer.getNumSamples());
 
     auto chainSettings = getChainSettings(apvts);
-    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), chainSettings.peakFreq, chainSettings.peakQuality, juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels));
+    auto peakQuality = 10.f;
+    auto peakGain = juce::Decibels::decibelsToGain(24.f);
+    auto peakFrequency = 20.f;
 
+    switch( chainSettings.note )
+    {
+        case Bypass:
+            peakGain = juce::Decibels::decibelsToGain(0.f);
+            break;
+        case C4:
+            peakFrequency = 261.63;
+        case Db4;
+            peakFrequency = 277.18;
+        case D4:
+            peakFrequency = 293.66;
+        case Eb4:
+            peakFrequency = 311.13;
+        case E4:
+            peakFrequency = 329.63;
+        case F4:
+            peakFrequency = 349.23;
+        case Gb4:
+            peakFrequency = 369.99;
+        case G4:
+            peakFrequency = 392.00;
+        case Ab4:
+            peakFrequency = 415.30;
+        case A4:
+            peakFrequency = 440.00;
+        case Bb4:
+            peakFrequency = 466.16;
+        case B4:
+            peakFrequency = 493.88;
+        }
+    
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, peakFrequency, peakQuality, peakGain);
+    
     *leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
     *rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
 

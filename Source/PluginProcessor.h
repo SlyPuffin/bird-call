@@ -10,9 +10,27 @@
 
 #include <JuceHeader.h>
 
+enum Notes
+{
+    Bypass,
+    C4,
+    Db4,
+    D4,
+    Eb4,
+    E4,
+    F4,
+    Gb4,
+    G4,
+    Ab4,
+    A4,
+    Bb4,
+    B4
+};
+
 struct ChainSettings
 {
-    float peakFreq { 0 }, peakGainInDecibels { 0 }, peakQuality { 1.f };
+    //float peakFreq { 0 }, peakGainInDecibels { 0 }, peakQuality { 1.f };
+    int note { Notes::Bypass };
 };
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& spvts);
