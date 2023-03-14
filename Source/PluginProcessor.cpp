@@ -116,7 +116,7 @@ void BirdcallAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
             break;
         case C4:
             peakFrequency = 261.63;
-        case Db4;
+        case Db4:
             peakFrequency = 277.18;
         case D4:
             peakFrequency = 293.66;
@@ -205,7 +205,7 @@ void BirdcallAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
             break;
         case C4:
             peakFrequency = 261.63;
-        case Db4;
+        case Db4:
             peakFrequency = 277.18;
         case D4:
             peakFrequency = 293.66;
@@ -229,7 +229,7 @@ void BirdcallAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
             peakFrequency = 493.88;
         }
     
-    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(sampleRate, peakFrequency, peakQuality, peakGain);
+    auto peakCoefficients = juce::dsp::IIR::Coefficients<float>::makePeakFilter(getSampleRate(), peakFrequency, peakQuality, peakGain);
     
     *leftChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
     *rightChain.get<ChainPositions::Peak>().coefficients = *peakCoefficients;
@@ -276,9 +276,7 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
 {
     ChainSettings settings;
 
-    settings.peakFreq = apvts.getRawParameterValue("Peak Frequency")->load();
-    settings.peakGainInDecibels = apvts.getRawParameterValue("Peak Gain")->load();
-    settings.peakQuality = apvts.getRawParameterValue("Peak Quality")->load();
+    settings.note = static_cast<Notes>(apvts.getRawParameterValue("Note")->load());
 
     return settings;
 }
@@ -287,9 +285,22 @@ juce::AudioProcessorValueTreeState::ParameterLayout BirdcallAudioProcessor::crea
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
-    layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Frequency", "Peak Frequency", juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f), 750.f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Gain", "Peak Gain", juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f), 0.0f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Quality", "Peak Quality", juce::NormalisableRange<float>(0.1f, 10.f, 0.05f, 1.f), 1.f));
+    juce::StringArray stringArray;
+    stringArray.add("Bypass");
+    stringArray.add("C4");
+    stringArray.add("Db4");
+    stringArray.add("D4");
+    stringArray.add("Eb4");
+    stringArray.add("E4");
+    stringArray.add("F4");
+    stringArray.add("Gb4");
+    stringArray.add("G4");
+    stringArray.add("Ab4");
+    stringArray.add("A4");
+    stringArray.add("Bb4");
+    stringArray.add("B4");
+
+    layout.add(std::make_unique<juce::AudioParameterChoice>("Note", "Note", stringArray, 0));
 
     return layout;
 }
