@@ -106,7 +106,7 @@ void BirdcallAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 
     auto chainSettings = getChainSettings(apvts);
     auto peakQuality = 10.f;
-    auto peakGain = juce::Decibels::decibelsToGain(24.f);
+    auto peakGain = juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels);
     auto peakFrequency = 20.f;
 
     switch( chainSettings.note )
@@ -195,7 +195,7 @@ void BirdcallAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
 
     auto chainSettings = getChainSettings(apvts);
     auto peakQuality = 10.f;
-    auto peakGain = juce::Decibels::decibelsToGain(24.f);
+    auto peakGain = juce::Decibels::decibelsToGain(chainSettings.peakGainInDecibels);
     auto peakFrequency = 20.f;
 
     switch( chainSettings.note )
@@ -276,6 +276,7 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
 {
     ChainSettings settings;
 
+    settings.peakGainInDecibels = apvts.getRawParameterValue("Peak Gain")->load();
     settings.note = static_cast<Notes>(apvts.getRawParameterValue("Note")->load());
 
     return settings;
@@ -284,6 +285,8 @@ ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts)
 juce::AudioProcessorValueTreeState::ParameterLayout BirdcallAudioProcessor::createParameterLayout()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    
+    layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Gain", "Peak Gain", juce::NormalisableRange<float>(0.f, 24.f, 0.5f, 1.f), 0.0f));
 
     juce::StringArray stringArray;
     stringArray.add("Bypass");

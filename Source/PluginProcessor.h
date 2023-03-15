@@ -30,6 +30,7 @@ enum Notes
 struct ChainSettings
 {
     //float peakFreq { 0 }, peakGainInDecibels { 0 }, peakQuality { 1.f };
+    float peakGainInDecibels { 0 };
     int note { Notes::Bypass };
 };
 
